@@ -75,6 +75,7 @@ description: 各レビュー観点の結果を統合し、1つのレビューレ
 - Performance
 - Security
 - Testing
+- Architecture
 
 ### 指摘の書き方
 
