@@ -76,6 +76,12 @@ description: 各レビュー観点の結果を統合し、1つのレビューレ
 - Security
 - Testing
 - Architecture
+- API Design
+- Type Design
+- Data Modeling
+- State Design
+- Dependency
+- Concurrency
 
 ### 指摘の書き方
 
