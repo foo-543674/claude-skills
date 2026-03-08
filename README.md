@@ -26,6 +26,12 @@ ln -s /path/to/claude-skills/skills/* ~/.claude/skills/
 | review-security | セキュリティ（インジェクション、認証認可）のレビュー |
 | review-testing | テスト設計・テストの質のレビュー |
 | review-architecture | アーキテクチャ設計（レイヤー分離、依存方向、CQRS）のレビュー |
+| review-api-design | API設計（エンドポイント命名、リクエスト・レスポンス構造、冪等性）のレビュー |
+| review-type-design | 型設計（不正状態の排除、判別共用体、Branded Type）のレビュー |
+| review-data-modeling | データモデリング（正規化、リレーション、マイグレーション、履歴管理）のレビュー |
+| review-state-design | 状態設計（ステートマシン、状態正規化、楽観的更新）のレビュー |
+| review-dependency | 依存関係設計（ライブラリ選定、循環依存、抽象化、バージョン管理）のレビュー |
+| review-concurrency | 並行処理設計（レースコンディション、トランザクション境界、リトライ戦略）のレビュー |
 | review-report | 各レビュー観点の結果を統合したレポート生成 |
 
 ## 参考
