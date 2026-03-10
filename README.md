@@ -5,9 +5,11 @@
 ## セットアップ
 
 ```bash
-# 各スキルを ~/.claude/skills/ にリンク
-ln -s /path/to/claude-skills/skills/* ~/.claude/skills/
+# スキルを ~/.claude/skills/ にコピー
+./deploy.sh
 ```
+
+スキルを更新した場合は再度 `deploy.sh` を実行してください。
 
 ## スキル一覧
 
