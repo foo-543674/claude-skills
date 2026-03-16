@@ -5,13 +5,17 @@
 ## セットアップ
 
 ```bash
-claude plugin install github:foo-543674/claude-skills
+# 1. marketplace として登録
+/plugin marketplace add foo-543674/claude-skills
+
+# 2. プラグインをインストール
+/plugin install claude-skills@foo-543674-skills
 ```
 
 アンインストール:
 
 ```bash
-claude plugin uninstall claude-skills
+/plugin uninstall claude-skills
 ```
 
 ## スキル一覧
