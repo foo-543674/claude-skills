@@ -150,17 +150,22 @@ RUN apt-get update && apt-get install -y nodejs python3
 
 #### 2.4 Dockerfile が必要な場合
 
-ベースイメージ + features では足りない場合に Dockerfile を作成する。
+ベースイメージ + features では足りない場合に**限り** Dockerfile を作成する。
 
 **Dockerfile を作る基準**:
-- システムパッケージの追加インストールが必要
-- 特定バージョンのツールを固定したい
+- features で提供されていないシステムパッケージの追加インストールが必要
+- features では対応できない特殊なビルドステップが必要
 - マルチステージビルドで開発用ツールを含めたい
+
+**Dockerfile を作る前のチェック**:
+- [ ] 目的のツールに対応する公式 feature が本当にないか確認したか？
+- [ ] `ghcr.io/devcontainers/features` の一覧を確認したか？
+- [ ] feature のオプション（バージョン指定等）で要件を満たせないか確認したか？
 
 ```
 .devcontainer/
 ├── devcontainer.json
-├── Dockerfile          # 必要な場合のみ
+├── Dockerfile          # features で対応できない場合のみ
 └── docker-compose.yml  # ローカルインフラが必要な場合
 ```
 
