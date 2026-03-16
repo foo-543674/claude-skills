@@ -5,13 +5,16 @@
 ```
 claude-skills/
 ├── .claude-plugin/
-│   └── plugin.json # プラグインマニフェスト
-├── CLAUDE.md       # プラグイン利用者向け（スキルの全体像・使い方）
-├── README.md       # 人間向け（セットアップ手順など）
-└── skills/         # スキル本体
-    └── <skill-name>/
-        ├── SKILL.md        # エントリポイント（YAML frontmatter + 指示）
-        └── resources/      # 詳細なリファレンス、チェックリスト等
+│   └── plugin.json               # プラグインマニフェスト
+├── CLAUDE.md                      # プラグイン利用者向け（スキルの全体像・使い方）
+├── README.md                      # 人間向け（セットアップ手順など）
+├── skills/                        # スキル本体
+│   └── <skill-name>/
+│       ├── SKILL.md               # エントリポイント（YAML frontmatter + 指示）
+│       └── resources/             # 詳細なリファレンス、チェックリスト等
+└── agents/                        # エージェント
+    ├── <agent-name>.md            # エージェント定義（YAML frontmatter + system prompt）
+    └── <agent-name>-resources/    # エージェント用リソース
 ```
 
 ## SKILL.md の形式
