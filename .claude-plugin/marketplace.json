@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "claude-skills",
-      "source": ".",
+      "source": "./",
       "description": "Software engineering skills for design, implementation, code review, and development workflow"
     }
   ]
