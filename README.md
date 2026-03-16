@@ -9,7 +9,7 @@
 /plugin marketplace add foo-543674/foo-skills
 
 # 2. プラグインをインストール
-/plugin install foo-skills@foo-543674-skills
+/plugin install foo-skills@foo-skills
 ```
 
 アンインストール:
