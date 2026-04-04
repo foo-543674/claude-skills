@@ -1,6 +1,6 @@
 ---
 name: commit-message
-description: Analyze git diff, stage changes in optimal granularity, and generate commit messages following foo-543674's conventions. Use when committing changes.
+description: Analyze git diff, stage changes in optimal granularity, and generate commit messages following foo-543674's conventions. Use when committing changes, when asked to commit, when generating commit messages, or when staging and committing code.
 ---
 
 # Commit Message Generation
