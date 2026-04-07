@@ -49,6 +49,7 @@
 
 | スキル | 説明 |
 |-------|------|
+| plan-implementation | 設計済みタスクを俯瞰し、AC/DoD を確定し、バーチカルスライスに分割した実装計画書を出力する |
 | implement-feature | テストファーストで機能を実装する（Red-Green-Refactor） |
 | implement-testing | テスト戦略の策定とテストの実装 |
 | implement-refactor | 既存コードの安全なリファクタリング |
