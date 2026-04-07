@@ -157,6 +157,107 @@ A → B → A のような循環依存は必ず解消する。
 - イベント駆動で疎結合にする
 - 依存方向を一方向に統一する
 
+## 捨てやすさ: シグネチャの境界設計
+
+> **「捨てる時の影響範囲がコントロールできる状態か」**
+
+技術的負債は、外的要因の変化が自分たちのコードにどこまで影響するかをコントロールできなくなった時に爆発する。コンポーネント設計の文脈では、捨てやすさは **シグネチャ (公開インターフェース) に外部ライブラリ固有の型を露出させない** ことで実現する。
+
+### なぜシグネチャ露出が致命的か
+
+公開シグネチャに外部ライブラリ固有の型が出ていると、**それを使うものすべてが直接依存する** 構造になる。今この関数 / コンポーネントを呼ぶ箇所が 1 つしかなくても、**今後追加されるすべての呼び出し元が同じ依存を引き継ぐ**。1 箇所の依存ではなく、未来全体の依存爆発を抑え込むのが、シグネチャ独立性の価値。
+
+### ステップ9: シグネチャ独立性の検証
+
+各モジュール / クラス / コンポーネントの **public な引数型 / 戻り値型 / コールバック型 / Props 型** に外部ライブラリ固有の型が出ていないか確認する。
+
+**チェック項目**:
+
+1. **バックエンドモジュールの場合**:
+   - public 関数 / メソッドの引数型に ORM の生成型 / フレームワークの Request / Response 型 / 外部 SDK の型が出ていないか
+   - 戻り値型に同じものが出ていないか
+   - エラー型 (Result/Either の Err 側) に外部ライブラリ固有の例外型が出ていないか
+   - **NG 例**: `function createOrder(req: express.Request): Promise<PrismaOrder>` — Express と Prisma に縛られる
+   - **OK 例**: `function createOrder(input: CreateOrderInput): Promise<Result<OrderId, CreateOrderError>>` — 自前定義型のみ
+
+2. **UI コンポーネント (Generic Presentational) の場合**:
+   - Props 型に UI ライブラリ固有の型 (MUI の `SxProps`、特定アイコンライブラリの型等) が露出していないか
+   - 露出していると、その Generic Presentational を使う Domain Presentational すべてが UI ライブラリに直接依存する
+   - **NG 例**: `Button` の Props で `sx?: SxProps<Theme>` を受ける → MUI 依存が呼び出し元全部に伝搬
+   - **OK 例**: `Button` の Props は `variant: "primary" | "secondary"` 等の自前抽象のみ。内部で MUI に変換
+
+3. **状態管理 / queries / mutations の場合**:
+   - 公開する hook / signal / store の戻り値型に、ライブラリ固有の型 (axios の `AxiosResponse`、TanStack Query の `UseQueryResult` の生型等) が露出していないか
+   - **TanStack Query 等は例外**: queries / mutations 自体がそのライブラリの型 (UseQueryResult 等) を返すのは一般的なパターン。ただし **その型に含まれる data / error は自前定義型** にすること
+
+### ステップ10: ラッパー / Adapter のシグネチャ独立性
+
+戦略 A (ラッパー / 抽象化) を採用したラッパー / Adapter を設計する時は、**ラッパー自身のシグネチャが内部で使っているライブラリに依存しない** ことを必須とする。
+
+**チェック項目**:
+
+1. **ラッパーの引数 / 戻り値が内部ライブラリに依存していないか**:
+   ```typescript
+   // ❌ 「ラッパー」と称しているが内部の axios 型が露出
+   import { AxiosResponse, AxiosError } from "axios";
+   export const httpGet = <T>(url: string): Promise<AxiosResponse<T>> => { /* ... */ };
+
+   // ✅ シグネチャが axios から独立
+   export type HttpResult<T> = Result<{ status: number; body: T }, HttpError>;
+   export const httpGet = <T>(url: string): Promise<HttpResult<T>> => { /* ... */ };
+   ```
+
+2. **薄すぎる素通しラッパーは作らない**:
+   - Adapter として「何も変換 / 制御していない」ラッパーは過剰設計
+   - 内部ライブラリの API を引数も戻り値もそのまま素通しするだけのラッパーは、認知負荷を増やすだけで捨てやすさの実質的な効果がない
+   - ラッパーには必ず **エラー型変換、戻り値の正規化、特定機能の制限、デフォルト値の付与** 等の Adapter 責務を持たせる
+
+### ステップ11: import 制限の実装 (戦略 B)
+
+UI コンポーネントライブラリ / 状態管理ライブラリのように、ラッパーで隠蔽するのが構造的に困難な対象には、**import 制限** で隔離する。
+
+**設計時に決めること**:
+
+1. **許可ディレクトリの定義**:
+   - 「このライブラリを直接 import してよいのはこのディレクトリ配下のみ」というルールを明文化
+   - 例: 「MUI は `src/components/ui/` 配下のみ直接 import 可」「Zustand は `src/features/<f>/state/` 配下のみ直接 import 可」
+
+2. **lint による機械的強制**:
+   - ESLint の `no-restricted-imports` / `eslint-plugin-import` の `import/no-restricted-paths`
+   - Rust の `clippy::disallowed_methods`
+   - 設計時に「lint で強制する」ことを必ずセットで決める。手動運用は破綻する
+
+3. **許可ディレクトリ内でのシグネチャ独立性**:
+   - 許可ディレクトリ内 (`src/components/ui/Button.tsx` 等) のコンポーネントの **Props 型は呼び出し元から見て独立** にする
+   - 内部実装で MUI を使うのは OK だが、Props で `SxProps<Theme>` を受けない
+   - これにより、許可ディレクトリ内部だけを書き換えれば呼び出し元への影響を抑えられる
+
+### ステップ12: ライブラリ使用ガイドラインの存在義務
+
+主要な外部ライブラリそれぞれに、使い方のガイドラインが明文化されている状態を保つ。
+
+**含めるべき項目**:
+- どの戦略 (A/B/C/D) を採用しているか
+- 直接 import が許可されるディレクトリはどこか
+- ラッパー / Adapter がある場合、その配置場所と使い方
+- lint で強制されているルール
+- 「明日このライブラリがなくなったら何を修正するか」の見積もり
+
+配置場所: `.contexts/dependencies/<library>.md` 等、プロジェクトの慣習に従う。
+
+### 過剰設計を避ける
+
+- **言語標準** (`Array.prototype.map`, `JSON.parse`, `Math` 等) は素のまま使う
+- **薄い素通しラッパー** を作らない
+- **置換可能性が要件にないものへの抽象化** (YAGNI 違反) を避ける
+- 重要なのは「コントロール下にあること」で、「完全に隔離されていること」ではない
+
+### 関連する他の設計スキルとの分担
+
+- 戦略選択 (4 種類のどれを採用するか) の方針 → `design-architecture`
+- ストレージ非依存のドメインモデル → `design-data-model`
+- API レスポンス DTO への内部型漏出防止 → `design-api`
+
 ## インフラ抽象 (フロント)
 
 ブラウザ依存の機能 (現在時刻、LocalStorage、ナビゲーション等) は `lib/infra/` に抽象として定義し、エントリポイントで Provider に束ねる。Page で `useContext` から取り出し、Container には Props で渡す。Container 内で `useContext` を直接呼ばない。
