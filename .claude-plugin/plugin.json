@@ -1,7 +1,7 @@
 {
   "name": "foo-skills",
   "description": "Software engineering skills for design, implementation, code review, and development workflow by foo-543674",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": {
     "name": "foo-543674"
   },
