@@ -106,9 +106,32 @@
 - 保存時自動フォーマット設定
 
 **Claude 設定**:
-- `.claude/settings.json`: 技術スタックに応じた設定（LSP プラグイン、許可コマンド等）
-  - 例: Rust なら `rust-analyzer` の MCP 設定、Go なら `gopls` 関連の設定
+- `.claude/settings.json`:
+  - `permissions.allow` / `deny`: 技術スタックで頻用する bash コマンドを許可
+  - `enabledPlugins`: **このリポジトリで開発する人全員に必要なプラグインを固定する**。現在の Claude Code セッションにインストール済みのプラグインを問うのではなく、技術スタックから導出して提案する
 - `CLAUDE.md`: プロジェクト固有のコンテキスト（アーキテクチャ概要、開発フロー、コマンド一覧等）
+
+**enabledPlugins の導出例**（技術スタックから導出する。インストール済みプラグインは聞かない）:
+
+| 技術スタック要素 | 導出されるプラグイン例 |
+|---|---|
+| Rust | `rust-lsp` プラグイン |
+| Go | `go-lsp` 系プラグイン |
+| TypeScript / Node.js | `typescript-lsp` 系プラグイン |
+| MySQL を使用 | `mysql` MCP プラグイン |
+| PostgreSQL を使用 | `postgres` MCP プラグイン |
+| Terraform を使用 | `terraform` MCP プラグイン |
+| AWS を使用 | `aws-docs` MCP プラグイン |
+| GitHub Actions / PR レビュー多用 | `github` MCP プラグイン |
+
+**正式名称の照合手順**（プレースホルダで終わらせず、可能な限り実名を埋める）:
+
+1. 上表で技術スタックに該当する候補を列挙
+2. ローカルのマーケットプレイスカタログを Read / Glob で走査して実在確認:
+   - `~/.claude/plugins/cache/**/plugin.json`
+   - `~/.claude/settings.json` の `extraKnownMarketplaces` から辿れる各 `marketplace.json`
+3. 見つかれば `<plugin-name>@<marketplace-name>` 形式で計画書に記載
+4. 見つからなければプレースホルダ + 注記（「既知マーケットプレイスに存在しないため別途検索が必要」）
 
 **CI**:
 - テスト実行速度の計測（CI の実行時間をトラッキング）

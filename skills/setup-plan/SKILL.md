@@ -182,7 +182,18 @@ CI ツール、自動化したいこと、重視することを聞く。
 ## Claude 設定
 
 ### .claude/settings.json
-[技術スタックに応じた設定。LSP プラグイン、許可コマンド等]
+[許可コマンド（permissions.allow / deny）、環境変数、フック等。技術スタックに応じて必要な bash コマンドを許可]
+
+### enabledPlugins（リポジトリで開発する人全員に必要なプラグイン）
+[このリポジトリの技術スタックから導出し、開発者全員が使うべきプラグインを列挙する。
+例: Rust → rust-lsp プラグイン、MySQL → mysql MCP、Terraform → terraform MCP 等。
+
+導出手順:
+1. 技術スタックからプラグイン候補を列挙
+2. ローカルのマーケットプレイスカタログ（`~/.claude/plugins/cache/**/plugin.json`、および `~/.claude/settings.json` の `extraKnownMarketplaces` から辿れる各 `marketplace.json`）を Read で走査して実在確認
+3. 見つかれば `<plugin>@<marketplace>` 形式で記載、無ければプレースホルダ + 注記
+
+`.claude/settings.json` の `enabledPlugins` に固定してリポジトリにコミットする]
 
 ### CLAUDE.md
 [プロジェクト固有のコンテキスト。アーキテクチャ概要、開発フロー、主要コマンド]
@@ -195,7 +206,7 @@ CI ツール、自動化したいこと、重視することを聞く。
 1. [ ] devcontainer の構築 → `setup-devcontainer` スキル
 2. [ ] ローカルインフラの構築 → `setup-local-infra` スキル
 3. [ ] CI パイプラインの構築 → `setup-ci` スキル
-4. [ ] Claude 設定の構築（.claude/settings.json, CLAUDE.md）
+4. [ ] Claude 設定の構築（.claude/settings.json の permissions と enabledPlugins、CLAUDE.md）
 5. [ ] ドキュメントの初期構成
 6. [ ] 動作確認（devcontainer 起動 → インフラ起動 → テスト実行 → CI 実行）
 ```
