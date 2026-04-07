@@ -482,7 +482,27 @@ Second Priority: Finding Decision Axes through Comparison / Example-Based Questi
 2. Yes/No questions ("Are there exception cases?")
 3. Leading questions ("Generally it's X, do you do that?")
 4. Questions asking multiple points at once
+5. Dumping multiple open-ended questions in a single turn
+   - The user interacts via terminal; writing many answers at once is too costly
+   - Always proceed one question per turn for free-form deep-dive questions
+
+6. Listing too many binary-choice questions in a single turn
+   - Even binary choices become a burden when 10 are listed at once
+     (just scrolling through them is painful)
+   - Cap binary-choice batches at 2-3 per turn; split into multiple turns if more
 ```
+
+### One-Question-Per-Turn Rule (MANDATORY for tacit knowledge elicitation)
+
+During Phase 2-5 (Why deep-dive, decision process verbalization, comparison-based
+branch identification, edge case discovery), ask **one question per turn** for
+free-form questions and wait for the user's reply before asking the next. Even
+if you have several related sub-questions in mind, surface only the most
+important one first.
+
+Binary-choice confirmations (setup-plan style) may be batched, but **only up to
+2-3 per turn**. Listing 10 binary choices at once is too much to scroll through
+— split larger sets across multiple turns.
 
 ### Effective Question Patterns
 
