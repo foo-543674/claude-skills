@@ -32,6 +32,7 @@ setup-plan → setup-*                       development-report
 - `setup-local-infra`: ローカル開発用インフラ（DB、キャッシュ等を docker compose で構築）
 
 **実装**: テストファーストで段階的に実装する
+- `plan-implementation`: 設計済みタスクを俯瞰し、AC/DoD を確定し、バーチカルスライスに分割した実装計画書を出力する（実装着手前に使う）
 - `implement-feature`: Red-Green-Refactor サイクルでの機能実装
 - `implement-testing`: テスト戦略の策定とテスト実装
 - `implement-refactor`: 影響範囲の分析と安全なリファクタリング
