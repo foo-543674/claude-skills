@@ -94,15 +94,33 @@ CI ツール、自動化したいこと、重視することを聞く。
 2. **技術スタックのベストプラクティスから必要な具体物を推論し、暗黙的に含める**: 「この言語・FW ならこれは必要」というものはユーザーが言及しなくても入れる
 3. **`resources/philosophy.md` の思想を判断の指針にする**: テスト戦略、レビュー体験、ドキュメント方針等
 4. **`resources/derivation-guide.md` を参照し、プロジェクト種別に応じた考慮事項を網羅する**
+5. **「ツールを選定する」ではなく「動く環境を作る」**: 各ツールについて、それが実際に「コマンド一発で動く」状態まで必要な構成要素をすべて洗い出す（後述）
+
+**「動く環境」の定義**:
+
+ツールを選定したら、そのツールが **明日その環境を触る開発者が `<起動コマンド>` を実行するだけで使い始められる** 状態まで揃えることをセットアップのゴールとする。具体的には以下のすべてが揃って初めて完了:
+
+| 要素 | 内容 |
+|---|---|
+| ① 依存追加 | マニフェスト（package.json, Cargo.toml 等）に依存・バージョンを記載 |
+| ② 設定ファイル | ツール固有の設定ファイル（`.storybook/main.ts`, `vitest.config.ts`, `eslint.config.js`, `sqlx-data.json`, `migrations/` 等）を生成 |
+| ③ 初期スキャフォールド | ツールが動くために必要な最小の入力（サンプルストーリー、サンプルテスト、初期マイグレーション、エントリポイント等） |
+| ④ 起動・実行スクリプト | `package.json` scripts や `justfile`/`Makefile`/`cargo` エイリアス等の実行入口 |
+| ⑤ devcontainer / CI への組み込み | ローカルでもCIでも同じコマンドで動くこと（必要なシステム依存・サービスも含めて） |
+| ⑥ 動作確認手順 | 「このコマンドを実行してこの結果が出れば OK」という検証ステップ |
+
+**①〜⑥のうち1つでも欠けたら「セットアップ未完」と判定する。** 「Storybook を package.json に書いた」だけは①しか満たしておらず、Storybook はまだ起動しない。
 
 **AI が補完する例**:
 
-| ユーザーの回答 | AI が導出する具体物 |
+| ユーザーの回答 | 「動く環境」として導出する具体物 |
 |---|---|
-| 「React + TypeScript で作る」 | ESLint, Prettier, Vitest, Storybook, Chromatic パイプライン, Playwright, バンドルサイズチェック |
-| 「統合テストもやりたい」 | Postman/Newman（言語非依存原則）、テスト用 DB、CI の統合テストジョブ |
-| 「API ドキュメントは自動生成」 | OpenAPI スキーマ、Swagger UI / Redoc のデプロイ、CI でのスキーマバリデーション |
-| 「PostgreSQL 使う」 | docker-compose でのPostgreSQL 構成、ヘルスチェック、テスト用 DB（tmpfs）、マイグレーション |
+| 「Storybook を使う」 | ① `storybook`, `@storybook/react-vite` 等を devDependencies に追加 / ② `.storybook/main.ts`, `.storybook/preview.ts` を生成 / ③ `src/components/Button.stories.tsx` 等の最小サンプルストーリー / ④ `npm run storybook`, `npm run build-storybook` を scripts に追加 / ⑤ devcontainer のポートフォワード、CI で `build-storybook` を実行 / ⑥ `npm run storybook` で 6006 番にアクセスしてサンプルが表示される |
+| 「Vitest でユニットテスト」 | ① `vitest`, `@vitest/ui`, `jsdom` 等 / ② `vitest.config.ts`（環境・カバレッジ設定） / ③ `src/__tests__/sample.test.ts` / ④ `test`, `test:watch`, `test:coverage` scripts / ⑤ CI の test ジョブ / ⑥ `npm test` でサンプルがグリーン |
+| 「sqlx-cli でマイグレーション」 | ① `Cargo.toml` に `sqlx` 依存と features（`postgres`, `runtime-tokio`, `macros` 等）追加 / ② `sqlx-cli` を devcontainer features か `cargo install sqlx-cli` で導入、`.env` に `DATABASE_URL` / ③ `migrations/` ディレクトリと初回マイグレーションファイル / ④ `cargo sqlx migrate run`, `cargo sqlx migrate add <name>` の実行手順、`justfile` 等に登録 / ⑤ docker-compose で PostgreSQL を起動、CI でマイグレーション実行ジョブ / ⑥ `sqlx migrate run` が成功し、`sqlx migrate info` で適用済みと表示 |
+| 「ESLint + Prettier」 | ① 依存追加 / ② `eslint.config.js`, `.prettierrc`, `.prettierignore` / ③ ルール設定（既存の philosophy に沿った推奨セット） / ④ `lint`, `lint:fix`, `format` scripts / ⑤ CI の lint ジョブ、editor 設定（`.vscode/settings.json`） / ⑥ `npm run lint` がパスする |
+
+**重要**: 計画書を導出するとき、選定した各ツールについて上記①〜⑥の表を頭の中で必ず埋める。埋まらない要素があれば「未完」として計画書に明記し、構築タスクに含める。
 
 ### 3. 計画書の出力
 
@@ -139,6 +157,41 @@ CI ツール、自動化したいこと、重視することを聞く。
 
 ### ポートフォワーディング
 [アプリケーション、DB、管理画面等のポート]
+
+## ツール環境のセットアップ
+
+**「ツールを選んだ」で終わらせない。各ツールについて、開発者が `<起動コマンド>` を実行するだけで動く状態まで構築する。**
+
+選定した各ツール（lint/format/test/Storybook/マイグレーション/型生成/バンドル/ドキュメント生成 等）について、以下の①〜⑥をすべて埋める:
+
+### ツール別セットアップ表
+
+| ツール | ① 依存（マニフェスト） | ② 設定ファイル | ③ 初期スキャフォールド | ④ 実行スクリプト | ⑤ devcontainer/CI 統合 | ⑥ 動作確認コマンドと期待結果 |
+|---|---|---|---|---|---|---|
+| [ツール名] | [追加する依存とバージョン] | [生成する設定ファイルパス] | [サンプルファイル] | [scripts/タスク名] | [必要なシステム依存・ジョブ] | [コマンド + 期待結果] |
+
+**埋められないマスがあれば「未完」と明記し、構築タスクに残す。**
+
+### マニフェストファイル
+
+対象（技術スタックから導出）: `package.json`, `Cargo.toml`, `pyproject.toml`, `go.mod`, `Gemfile`, `composer.json` 等
+
+各マニフェストに記載するもの:
+
+- **依存関係**: 上記表①の総和
+- **スクリプト/タスク**: 上記表④の総和（`package.json` scripts, `cargo` エイリアス, `justfile`, `Makefile` 等）
+- **メタデータ**: name, version, license, repository
+- **言語・ランタイムバージョン制約**: `engines`, `rust-version`, `requires-python` 等
+
+### 設定ファイル・スキャフォールド一覧
+
+上記表②③で挙げた成果物のパスを一覧化する。例:
+
+- `.storybook/main.ts`, `.storybook/preview.ts`
+- `vitest.config.ts`, `src/__tests__/sample.test.ts`
+- `eslint.config.js`, `.prettierrc`
+- `migrations/0001_init.sql`
+- `openapi.yaml`, `scripts/generate-types.sh`
 
 ## ローカルインフラ
 
@@ -209,11 +262,17 @@ CI ツール、自動化したいこと、重視することを聞く。
 
 1. [ ] devcontainer の構築 → `setup-devcontainer` スキル
 2. [ ] ローカルインフラの構築 → `setup-local-infra` スキル
-3. [ ] CI パイプラインの構築 → `setup-ci` スキル
-4. [ ] .gitignore の作成
-5. [ ] Claude 設定の構築（.claude/settings.json の permissions と enabledPlugins、CLAUDE.md）
-6. [ ] ドキュメントの初期構成
-7. [ ] 動作確認（devcontainer 起動 → インフラ起動 → テスト実行 → CI 実行）
+3. [ ] **ツール環境のセットアップ**: 「ツール別セットアップ表」の各行について①〜⑥をすべて完了
+   - [ ] ① マニフェスト（package.json, Cargo.toml 等）に依存・スクリプト追加
+   - [ ] ② 各ツールの設定ファイル生成（`.storybook/`, `vitest.config.ts`, `eslint.config.js`, `migrations/` 等）
+   - [ ] ③ 初期スキャフォールド（サンプルストーリー、サンプルテスト、初回マイグレーション等）
+   - [ ] ④ 起動・実行スクリプトの登録
+   - [ ] ⑥ 各ツールの起動コマンドを実行し、表⑥の期待結果と一致することを確認
+4. [ ] CI パイプラインの構築 → `setup-ci` スキル（上記④のスクリプトをそのまま呼ぶ）
+5. [ ] .gitignore の作成
+6. [ ] Claude 設定の構築（.claude/settings.json の permissions と enabledPlugins、CLAUDE.md）
+7. [ ] ドキュメントの初期構成
+8. [ ] エンドツーエンド動作確認: devcontainer 再ビルド → インフラ起動 → 依存インストール → 各ツールの起動コマンドを順に実行 → CI 実行 → すべてグリーン
 ```
 
 ## 計画書出力後のフロー
