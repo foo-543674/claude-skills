@@ -60,6 +60,7 @@
 |-------|------|
 | commit-message | コミットメッセージの生成・コミット粒度の判断 |
 | development-report | 各フェーズの成果物を統合した開発レポート生成 |
+| skill-feedback | 対話型スキル利用後に foo-543674 から受けた指摘を GitHub Issue として foo-skills に登録する（foo-543674 本人のみ動作） |
 
 ## エージェント
 

@@ -40,6 +40,7 @@ setup-plan → setup-*                       development-report
 **その他**
 - `commit-message`: git diff を分析し、適切な粒度でステージング・コミットメッセージ生成
 - `development-report`: 要件定義・設計・実装の成果物を統合した開発レポート生成
+- `skill-feedback`: 対話型スキル利用後に foo-543674 から受けた指摘を抽出し、foo-skills リポジトリに GitHub Issue として登録する（foo-543674 本人のみ動作）
 
 ### エージェント
 

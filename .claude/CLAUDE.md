@@ -67,6 +67,10 @@ When receiving feedback or corrections about skill writing or content from foo-5
 2. **Update this file**: If the feedback is a general rule applicable to other skills, add it as a rule to the "Rules to Follow" or relevant section of this file
 3. **Horizontal deployment to existing skills**: If existing skills violate the added rule, fix them as well
 
+### Remote-session feedback
+
+When the feedback happens in a Claude Code session running on a different terminal or a different repository (not this one), fixing the skill in-session is not possible. In that case, foo-543674 can invoke `/foo-skills:skill-feedback` to externalize the feedback as GitHub Issues on `foo-543674/foo-skills`, which then feed back into the loop above asynchronously.
+
 ## Tacit Knowledge Elicitation Protocol for Skill Creation
 
 When receiving a skill creation request, do not simply implement surface-level instructions. Follow this protocol to systematically elicit the user's tacit knowledge.
