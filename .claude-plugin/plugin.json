@@ -1,7 +1,7 @@
 {
   "name": "foo-skills",
   "description": "AI self-running context generator. Bootstraps projects with CLAUDE.md, architecture tests, code-reviewer agents, and tool-agnostic AI context based on foo-543674's engineering philosophy.",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "author": {
     "name": "foo-543674"
   },
