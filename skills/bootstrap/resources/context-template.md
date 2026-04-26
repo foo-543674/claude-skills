@@ -86,13 +86,13 @@ push 前に最低限通すべき検証。タスクが複数種別にまたがる
 
 | タスク種別 | 最小チェックセット |
 |---|---|
-| backend 実装変更 | format + lint + 型チェック + 該当範囲のテスト |
-| frontend 実装変更 | lint + 型チェック + 該当範囲のテスト + アーキテクチャテスト |
+| backend 実装変更 | format + lint + 型チェック + 該当範囲のテスト + アーキテクチャテスト |
+| frontend 実装変更 | format + lint + 型チェック + 該当範囲のテスト + アーキテクチャテスト |
 | docs / 設計ドキュメント変更 | 関連他文書との grep 突き合わせ (HTTP ステータス / フィールド名 / エラーコード等の用語統一) |
 | OpenAPI / スキーマ変更 | スキーマ lint + 参照元ドキュメント・実装との整合確認 |
 | DB マイグレーション変更 | マイグレーション適用 + ORM スキーマ再生成 + 既存テストの再実行 |
 
-[プロジェクトの技術スタックに応じて上記表を具体化する。例: backend = `cargo fmt + cargo clippy + cargo nextest`, frontend = `pnpm lint + pnpm typecheck + pnpm test + pnpm arch:test`, OpenAPI = `redocly lint`, migration = `db-migrate(-test) + db-prepare`]
+[プロジェクトの技術スタックに応じて上記表を具体化する。例: backend = `cargo fmt + cargo clippy + cargo nextest + cargo test --test arch`, frontend = `pnpm format + pnpm lint + pnpm typecheck + pnpm test + pnpm arch:test`, OpenAPI = `redocly lint`, migration = `db-migrate(-test) + db-prepare`]
 
 ## アーキテクチャ
 
