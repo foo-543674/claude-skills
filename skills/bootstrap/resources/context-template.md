@@ -1,6 +1,33 @@
-# CLAUDE.md テンプレート
+# AGENTS.md テンプレート
 
-bootstrap が生成する CLAUDE.md の構成テンプレート。プロジェクトの性質に応じて取捨選択する。
+bootstrap が生成する **`AGENTS.md` (プロジェクト指示の原典)** の構成テンプレート。プロジェクトの性質に応じて取捨選択する。
+
+## ファイルの役割
+
+- **`AGENTS.md`** — このテンプレートが対象とする原典。Codex CLI の既定ファイルであり、Claude Code 公式 docs も `CLAUDE.md` から `@AGENTS.md` で import する形で連携を推奨している (`AGENTS.md` を共通原典として複数 AI ツールから参照する設計)
+- **`CLAUDE.md`** — 先頭に `@AGENTS.md` 1 行のみ。Claude Code 固有の指示があれば下に追記する。本テンプレートとは別途用意する必要はない
+- **`GEMINI.md`** — 先頭に `@AGENTS.md` 1 行のみ。Gemini CLI 固有の指示があれば下に追記する (Gemini CLI は `@file.md` 構文で他ファイルを import 可能)
+- **`.cursorrules` / `.github/copilot-instructions.md`** — import 構文がないため、bootstrap 時に AGENTS.md の核心部分を派生生成する。冒頭に「派生元: AGENTS.md / 再 bootstrap で再同期」とコメントで明記する
+
+## 各ファイルの最小スケルトン
+
+### CLAUDE.md (最小)
+
+```markdown
+@AGENTS.md
+
+<!-- Claude Code 固有の指示があればここに追記 -->
+```
+
+### GEMINI.md (最小)
+
+```markdown
+@AGENTS.md
+
+<!-- Gemini CLI 固有の指示があればここに追記 -->
+```
+
+### AGENTS.md (本テンプレートの本体)
 
 ```markdown
 # [Project Name]
