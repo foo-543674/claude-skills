@@ -137,6 +137,8 @@ perspectives/ のルールを実行可能なテストに変換し、CI で自動
 
 AI コンテキスト基盤が整ったら、技術インフラの構築に進む。**ここからは AI が自身の知識を使って自走する。** philosophy/ の判断基準には従うが、How は AI が決める。
 
+`${CLAUDE_PLUGIN_ROOT}/skills/bootstrap/resources/known-pitfalls.md` に既知の落とし穴が登録されている。技術インフラ構築時に該当する技術 (Copilot Coding Agent 連携、claude-code-action 等) を扱う場合は該当エントリを参照する。
+
 **やること**:
 1. 技術インフラの構築 (必要なものだけ):
    - devcontainer (開発環境のコンテナ化)
