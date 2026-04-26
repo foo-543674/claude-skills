@@ -4,7 +4,7 @@
 
 ## このプラグインの性格
 
-このプラグインは「直接使う AI ツール」ではなく「プロジェクトに AI 自走基盤を生成するジェネレータ」。生成後はプラグインがなくても、Claude Code / Copilot / Cursor 等どの AI ツールでもプロジェクトのコンテキストが機能する。
+このプラグインは「直接使う AI ツール」ではなく「プロジェクトに AI 自走基盤を生成するジェネレータ」。生成後はプラグインがなくても、Claude Code / GitHub Copilot / Cursor / Gemini CLI / OpenAI Codex CLI 等どの AI ツールでもプロジェクトのコンテキストが機能する。
 
 ```
 プラグインの中 (原料 + エンジン)
@@ -13,7 +13,8 @@
   bootstrap      プロジェクトに AI 自走基盤を生成するスキル
 
 プロジェクトの中 (生成物)
-  CLAUDE.md, copilot-instructions, .cursorrules
+  AGENTS.md (原典), CLAUDE.md / GEMINI.md (@AGENTS.md import)
+  copilot-instructions, .cursorrules (AGENTS.md から派生生成)
   code-reviewer エージェント
   アーキテクチャテスト
   コミット規約、開発コマンド
